@@ -73,23 +73,29 @@ What we're saying with this is "we're being asked to upgrade this HTTP request t
     */
     wsServer.handleUpgrade(request, socket, head, (websocket) => {
       wsServer.emit("connection", websocket, request);
+      console.log("Websocket connection established");
     });
   });
 
-  wsServer.on("connection", (wsConnection, connectionReq) => {
+  return wsServer;
+};
+
+export const wsConsumer = (
+  _wsServer: WebSocket.Server<WebSocket.WebSocket>
+) => {
+  _wsServer.on("connection", (wsConnection, connectionReq) => {
     //? wsConnection -> the open connection that is happening between the server and client
     //? connectionReq -> the original request that opened the connection
     const [_, params] = connectionReq?.url?.split("?") || [];
     const connParams = queryString.parse(params);
 
-    console.log("Params: ", connParams);
+    console.log("Params: ", connParams.name);
 
     wsConnection.on("message", (message) => {
+      console.log(message);
       const parseMessage = JSON.parse(message.toString());
       console.log("Message", parseMessage);
       wsConnection.send(JSON.stringify({ message: "Hello! Im CryptoStream!" }));
     });
   });
-
-  return wsServer;
 };

@@ -2,7 +2,7 @@ import helmet from "helmet";
 import express, { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
 import cors, { CorsOptions } from "cors";
-import { connectStream } from "./stream-funs";
+import { connectStream, initWServer, wsConsumer } from "./stream-funs";
 
 const app = express();
 const corsOptions: CorsOptions = {
@@ -33,4 +33,4 @@ const server = app.listen(PORT, () => {
   console.log(`The server is running on port ${PORT}`);
 });
 
-connectStream(); // establish stream connection
+wsConsumer(initWServer(server)); // establish stream connection
