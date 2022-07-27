@@ -29,7 +29,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 //checks if there is an environment variable set, if not set to port 8080
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`The server is running on port ${PORT}`);
 });
 
