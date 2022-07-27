@@ -3,7 +3,6 @@ import express, { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
 import cors, { CorsOptions } from "cors";
 import { connectStream } from "./stream-funs";
-require('dotenv').config();
 
 const app = express();
 const corsOptions: CorsOptions = {
