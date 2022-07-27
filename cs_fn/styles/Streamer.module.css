@@ -21,3 +21,10 @@
         opacity: 0;
     }
 }
+
+.stream_dets {
+    width: 100%;
+    margin-top: 3rem;
+    font-size: 2rem;
+
+}

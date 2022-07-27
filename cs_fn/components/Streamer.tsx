@@ -11,13 +11,19 @@ const Streamer = () => {
       setWsDets(data);
     };
 
-  console.log("render");
   return (
     <div className={styles.container}>
       <div>
         <span className={styles.underscore}>_</span>CryptoStream
       </div>
-      <div>hello</div>
+      <div className={styles.stream_dets}>
+        {Object.keys(wsDets || {}).map((val: string, index) => (
+          <div key={index}>
+            <span style={{color:'yellow'}}>{val.charAt(0).toUpperCase() + val.slice(1)}:</span>
+            {wsDets ? wsDets[val] : null}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

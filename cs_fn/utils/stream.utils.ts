@@ -3,6 +3,7 @@ export const wsInstance = isBrowser
   ? new WebSocket(process.env.NEXT_PUBLIC_WSOURCE as string)
   : null;
 export interface wsDets {
+  [key: string]: string;
   exchange: string;
   pair: string;
   side: string;
