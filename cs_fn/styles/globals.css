@@ -13,12 +13,21 @@ a {
 
 * {
   box-sizing: border-box;
+  font-family: 'Share Tech Mono', monospace;
+
+}
+
+:root {
+  color: white;
+  background: black;
+  font-size: 18px;
 }
 
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
+
   body {
     color: white;
     background: black;
