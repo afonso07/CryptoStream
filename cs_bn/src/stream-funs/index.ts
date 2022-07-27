@@ -87,6 +87,9 @@ What we're saying with this is "we're being asked to upgrade this HTTP request t
     wsConnection.on("message", (message) => {
       const parseMessage = JSON.parse(message.toString());
       console.log("Message", parseMessage);
+      wsConnection.send(JSON.stringify({ message: "Hello! Im CryptoStream!" }));
     });
   });
+
+  return wsServer;
 };
