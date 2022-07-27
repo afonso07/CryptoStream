@@ -2,6 +2,8 @@ import helmet from "helmet";
 import express, { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
 import cors, { CorsOptions } from "cors";
+import { connectStream } from "./stream-funs";
+require('dotenv').config();
 
 const app = express();
 const corsOptions: CorsOptions = {
@@ -31,3 +33,5 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`The server is running on port ${PORT}`);
 });
+
+connectStream(); // establish stream connection

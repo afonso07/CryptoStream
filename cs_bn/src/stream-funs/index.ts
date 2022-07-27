@@ -1,43 +1,45 @@
-import { client as WebSocketClient } from "websocket";
-import { authenticateWS } from "../config/auth.config";
+import { StreamClient, RESTClient } from "cw-sdk-node";
+import { MarketBrief } from "cw-sdk-node/build/rest/types/data";
+require("dotenv").config();
 
-export const connectStream = () => {
-  var client = new WebSocketClient();
+//? Based on the cryptowatch websocket api https://docs.cryptowat.ch/websocket-api/data-subscriptions
+const rc = new RESTClient();
+const streamClient = new StreamClient({
+  creds: {
+    // These can also be read from ~/.cw/credentials.yml
+    apiKey: process.env.PK as string,
+    secretKey: process.env.SK as string,
+  },
+  subscriptions: [
+    // Subscription key for all trades from all markets
+    //? 99 is ethbt in kraken, https://api.cryptowat.ch/markets
+    "markets:588:trades",
+  ],
+});
 
-  //? Uses the following example https://www.npmjs.com/package/websocket
-  client.on("connectFailed", function (error) {
-    console.log("Connect Error: " + error.toString());
+export const connectStream = async () => {
+  const markets = await rc.getMarkets();
+  const marketCache: { [key: number]: MarketBrief } = {};
+  markets.forEach((market) => {
+    marketCache[market.id] = market; // Cache all market identifiers
   });
 
-  client.on("connect", function (connection) {
-    console.log("WebSocket Client Connected");
-    connection.on("error", function (error) {
-      console.log("Connection Error: " + error.toString());
+  // Listen for received trades and print them
+  streamClient.onMarketUpdate((marketData) => {
+    console.log(marketData)
+    const tradesUpdate = marketData.trades;
+    tradesUpdate?.forEach((tradeUpdate) => {
+      console.log(
+        marketCache[marketData.market.id], // access market info from cache
+        tradeUpdate.side,
+        "Price: ",
+        tradeUpdate.price,
+        "Amount: ",
+        tradeUpdate.amount
+      );
     });
-    connection.on("close", function () {
-      console.log("echo-protocol Connection Closed");
-    });
-    connection.on("message", function (message) {
-      if (message.type === "utf8") {
-        console.log("Received: '" + message.utf8Data + "'");
-      }
-    });
-    function authenticate() {
-      console.log("🔒 Authenticating");
-
-      if (connection.connected) {
-        const authConfig: authenticateWS = {
-          action: "auth",
-          key: process.env.APIKEY,
-          secret: process.env.APISECRET,
-        };
-        connection.send(JSON.stringify(authConfig));
-      }
-    }
-    authenticate();
   });
 
-  client.connect(
-    "wss://stream.data.alpaca.markets/v1beta2/crypto?exchanges=CBSE"
-  );
+  // Connect to stream
+  streamClient.connect();
 };
