@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "Starting 💸 CryptoStream"
+npm start --prefix cs_bn & 
+npm run dev --prefix cs_fn & 
+wait
+
+
+
+echo "Hello, world!"

@@ -3,10 +3,11 @@ import { MarketBrief } from "cw-sdk-node/build/rest/types/data";
 import { Request } from "express";
 import WebSocket from "ws";
 import queryString from "query-string";
+import { cryptoObj } from "../config/stream.config";
 
 require("dotenv").config();
 
-export const connectStream = async () => {
+export const connectStream = async (_wsConnection: WebSocket.WebSocket) => {
   //? Based on the cryptowatch websocket api https://docs.cryptowat.ch/websocket-api/data-subscriptions
   const rc = new RESTClient();
   const streamClient = new StreamClient({
@@ -29,17 +30,27 @@ export const connectStream = async () => {
 
   // Listen for received trades and print them
   streamClient.onMarketUpdate((marketData) => {
-    console.log(marketData);
+    //console.log(marketData);
     const tradesUpdate = marketData.trades;
     tradesUpdate?.forEach((tradeUpdate) => {
-      console.log(
+      var result: cryptoObj = {
+        exchange: marketCache[marketData.market.id].exchange,
+        pair: marketCache[marketData.market.id].pair,
+        side: tradeUpdate.side,
+        price: tradeUpdate.price,
+        amount: tradeUpdate.amount,
+      };
+
+      //console.log(result);
+      _wsConnection.send(JSON.stringify(result));
+      /*console.log(
         marketCache[marketData.market.id], // access market info from cache
         tradeUpdate.side,
         "Price: ",
         tradeUpdate.price,
         "Amount: ",
         tradeUpdate.amount
-      );
+      );*/
     });
   });
 
@@ -97,5 +108,7 @@ export const wsConsumer = (
       console.log("Message", parseMessage);
       wsConnection.send(JSON.stringify({ message: "Hello! Im CryptoStream!" }));
     });
+
+    connectStream(wsConnection);
   });
 };
